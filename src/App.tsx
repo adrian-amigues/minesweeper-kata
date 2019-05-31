@@ -5,9 +5,11 @@ import { Grid } from './Components/Grid';
 
 const App = () => {
     return (
-        <GameContextProvider>
-            <Grid />
-        </GameContextProvider>
+        <div style={{ position: 'relative', height: '100%' }}>
+            <GameContextProvider>
+                <Grid />
+            </GameContextProvider>
+        </div>
     );
 };
 

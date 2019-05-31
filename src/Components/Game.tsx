@@ -1,9 +1,17 @@
 import React from 'react';
 
+type GameOver = false | 'victory' | 'defeat';
 type GameProps = {
-    gameOver: false | 'victory' | 'defeat';
+    gameOver: GameOver;
 };
 
+const gameTextStyle = (gameOver: GameOver): React.CSSProperties => ({
+    fontSize: '4.5rem',
+    fontFamily: 'cursive',
+    textAlign: 'center',
+    color: gameOver === 'victory' ? 'rgb(101, 204, 41);' : 'rgb(189, 22, 58)',
+});
+
 export const Game: React.FunctionComponent<GameProps> = props => {
-    return <div>{props.gameOver}</div>;
+    return <div style={gameTextStyle(props.gameOver)}>{props.gameOver}</div>;
 };

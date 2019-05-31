@@ -18,16 +18,17 @@ const cellStyle = (status: CellStatus): React.CSSProperties => ({
     height: '40px',
     textAlign: 'center',
     lineHeight: '40px',
-    border: '1px solid black',
     boxSizing: 'border-box',
     cursor: 'pointer',
+    boxShadow: 'inset 0px 0px 1px 2px #00000052',
     backgroundColor:
-        status === 'untouched' || status === 'flagged' ? '#ccc' : undefined,
+        status === 'untouched' || status === 'flagged' ? '#4c97f3' : '#f5f5f5',
 });
 
 export const Cell: React.FunctionComponent<CellProps> = props => {
     return (
         <div
+            className="cell"
             onClick={ev => {
                 ev.preventDefault();
                 props.onclick(ev);

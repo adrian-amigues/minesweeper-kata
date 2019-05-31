@@ -4,6 +4,13 @@ import { Cell } from './Cell';
 import { Game } from './Game';
 import { isDefeated, isVictorious } from '../Domain/Rules';
 
+const playAreaStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+};
+
 export const Grid: React.FunctionComponent = () => {
     const { grid, updateGridCellStatus } = React.useContext(GameContext);
 
@@ -17,15 +24,15 @@ export const Grid: React.FunctionComponent = () => {
         false;
 
     return (
-        <React.Fragment>
+        <div style={playAreaStyle}>
             <Game gameOver={gameOver} />
             <div
                 style={{
                     display: 'flex',
-                    border: '1px solid black',
                     boxSizing: 'content-box',
                     flexWrap: 'wrap',
                     width: `calc(40px * ${grid.column})`,
+                    margin: 'auto',
                 }}
             >
                 {grid.map((cell, index) => (
@@ -38,6 +45,6 @@ export const Grid: React.FunctionComponent = () => {
                     />
                 ))}
             </div>
-        </React.Fragment>
+        </div>
     );
 };
