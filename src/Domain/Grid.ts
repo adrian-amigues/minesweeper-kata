@@ -58,7 +58,41 @@ export class Grid {
     }
 
     cellByCoodinates(x: number, y: number): Cell | undefined {
+        if (x < 0 || y < 0 || x >= this._column || y >= this._column)
+            return undefined;
         return this._cells[this._column * y + x];
+    }
+
+    getCellCoordinatesFromIndex(index: number) {
+        return {
+            x: index % this._column,
+            y: Math.floor(index / this._column),
+        };
+    }
+
+    getAdjacentCellsFromCoordinates(x: number, y: number): Cell[] {
+        return [
+            [x - 1, y - 1],
+            [x, y - 1],
+            [x + 1, y - 1],
+            [x - 1, y],
+            [x + 1, y],
+            [x - 1, y + 1],
+            [x, y + 1],
+            [x + 1, y + 1],
+        ]
+            .map(([x, y]) => this.cellByCoodinates(x, y))
+            .filter(cell => cell instanceof Cell) as Cell[];
+    }
+
+    getAdjacentCellsMineCount(index: number) {
+        const { x, y } = this.getCellCoordinatesFromIndex(index);
+        const adjacentCells = this.getAdjacentCellsFromCoordinates(x, y);
+
+        return adjacentCells.reduce(
+            (acc, cell) => acc + (cell.bomb ? 1 : 0),
+            0
+        );
     }
 
     sendActionToCell(cellIndex: number, action: CellAction): Grid {
