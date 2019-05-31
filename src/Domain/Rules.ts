@@ -10,7 +10,7 @@ export const isDefeated = (grid: Grid) => {
 export const isVictorious = (grid: Grid) => {
     for (let cell of grid) {
         if (
-            (cell.dug === false && cell.flagged === false) ||
+            (cell.dug === false && cell.bomb === false) ||
             cell.detonated === true
         ) {
             return false;

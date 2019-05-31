@@ -3,7 +3,13 @@ import { Cell } from '../src/Domain/Cell';
 import { Grid } from '../src/Domain/Grid';
 
 describe('Rules', () => {
-    test('a new game is neither lost or won', () => {
+    test('a new game with only bombs is automatically won', () => {
+        const grid = Grid.generate(1, 1, 1);
+        expect(isDefeated(grid)).toBe(false);
+        expect(isVictorious(grid)).toBe(true);
+    });
+
+    test('a new game without only bombs is neither lost or won', () => {
         const grid = Grid.generate(1, 1, 0);
         expect(isDefeated(grid)).toBe(false);
         expect(isVictorious(grid)).toBe(false);
@@ -11,7 +17,8 @@ describe('Rules', () => {
 
     test('a game is lost if a cell with a bomb has been dug', () => {
         const cellWithBomb = Cell.withBomb();
-        const grid = new Grid(1, [cellWithBomb]);
+        const cellWithoutBomb = Cell.withoutBomb();
+        const grid = new Grid(1, [cellWithBomb, cellWithoutBomb]);
         expect(isDefeated(grid)).toBe(false);
         expect(isVictorious(grid)).toBe(false);
 

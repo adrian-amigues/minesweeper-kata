@@ -43,6 +43,10 @@ export class Cell {
         return this._dug;
     }
 
+    get bomb(): boolean {
+        return this._bomb;
+    }
+
     get status(): CellStatus {
         if (this.detonated) {
             return 'detonated';
