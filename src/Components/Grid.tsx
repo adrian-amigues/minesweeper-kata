@@ -39,6 +39,7 @@ export const Grid: React.FunctionComponent = () => {
                     <Cell
                         key={index}
                         status={cell.status}
+                        surroundingMines={grid.getAdjacentCellsMineCount(index)}
                         onclick={(ev: MouseEvent) =>
                             handleClick(index, ev.button)
                         }

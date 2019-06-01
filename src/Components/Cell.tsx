@@ -4,14 +4,15 @@ import { CellStatus } from '../Domain/Cell';
 type CellProps = {
     status: CellStatus;
     onclick: Function;
+    surroundingMines: number;
 };
 
-const emojis = {
+const cellDisplay = (surroundingMines: number) => ({
     untouched: '',
-    dug: '',
+    dug: surroundingMines,
     flagged: '🚩',
     detonated: '💥',
-};
+});
 
 const cellStyle = (status: CellStatus): React.CSSProperties => ({
     width: '40px',
@@ -23,6 +24,8 @@ const cellStyle = (status: CellStatus): React.CSSProperties => ({
     boxShadow: 'inset 0px 0px 1px 2px #00000052',
     backgroundColor:
         status === 'untouched' || status === 'flagged' ? '#4c97f3' : '#f5f5f5',
+    fontFamily: 'sans-serif',
+    fontSize: '1.4rem',
 });
 
 export const Cell: React.FunctionComponent<CellProps> = props => {
@@ -39,7 +42,7 @@ export const Cell: React.FunctionComponent<CellProps> = props => {
             }}
             style={cellStyle(props.status)}
         >
-            {emojis[props.status]}
+            {cellDisplay(props.surroundingMines)[props.status]}
         </div>
     );
 };

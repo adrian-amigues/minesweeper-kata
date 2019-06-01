@@ -9,7 +9,7 @@ const gameTextStyle = (gameOver: GameOver): React.CSSProperties => ({
     fontSize: '4.5rem',
     fontFamily: 'cursive',
     textAlign: 'center',
-    color: gameOver === 'victory' ? 'rgb(101, 204, 41);' : 'rgb(189, 22, 58)',
+    color: gameOver === 'victory' ? 'rgb(101, 204, 41)' : 'rgb(189, 22, 58)',
 });
 
 export const Game: React.FunctionComponent<GameProps> = props => {
