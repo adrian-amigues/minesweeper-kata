@@ -11,8 +11,23 @@ const playAreaStyle: React.CSSProperties = {
     transform: 'translate(-50%, -50%)',
 };
 
+const undoStyle: React.CSSProperties = {
+    position: 'relative',
+    left: '50%',
+    transform: 'translate(-50%, 0)',
+    fontSize: '1.3rem',
+    background: '#ea4dd4',
+    borderRadius: '8px',
+    marginTop: '10px',
+};
+
 export const Grid: React.FunctionComponent = () => {
-    const { grid, updateGridCellStatus } = React.useContext(GameContext);
+    const {
+        grid,
+        previousGrid,
+        updateGridCellStatus,
+        undoLastMove,
+    } = React.useContext(GameContext);
 
     const handleClick = (index: number, button: number) => {
         updateGridCellStatus(index, button === 0 ? 'dig' : 'flag');
@@ -46,6 +61,13 @@ export const Grid: React.FunctionComponent = () => {
                     />
                 ))}
             </div>
+            <button
+                style={undoStyle}
+                disabled={previousGrid === undefined}
+                onClick={() => undoLastMove()}
+            >
+                Undo last action
+            </button>
         </div>
     );
 };
