@@ -9,7 +9,7 @@ type CellProps = {
 
 const cellDisplay = (surroundingMines: number) => ({
     untouched: '',
-    dug: surroundingMines,
+    dug: surroundingMines === 0 ? '' : surroundingMines,
     flagged: '🚩',
     detonated: '💥',
 });
