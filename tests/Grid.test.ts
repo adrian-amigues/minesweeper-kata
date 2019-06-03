@@ -75,7 +75,7 @@ describe(Grid, () => {
     });
 
     describe('getAdjacentCellsFromCoordinates', () => {
-        test('it returns an array of all 8 surrounding cells when in the middle', () => {
+        test('it returns CellsWithCoordinates array of all 8 surrounding cells when in the middle', () => {
             const expected = Cell.withBomb();
             const unexpected = Cell.withoutBomb();
             const grid = new Grid(3, [
@@ -93,14 +93,14 @@ describe(Grid, () => {
             const adjacentCells = grid.getAdjacentCellsFromCoordinates(1, 1);
             expect(adjacentCells.length).toBe(8);
             expect(adjacentCells).toEqual([
-                expected,
-                expected,
-                expected,
-                expected,
-                expected,
-                expected,
-                expected,
-                expected,
+                { cell: expected, x: 0, y: 0 },
+                { cell: expected, x: 1, y: 0 },
+                { cell: expected, x: 2, y: 0 },
+                { cell: expected, x: 0, y: 1 },
+                { cell: expected, x: 2, y: 1 },
+                { cell: expected, x: 0, y: 2 },
+                { cell: expected, x: 1, y: 2 },
+                { cell: expected, x: 2, y: 2 },
             ]);
         });
 
@@ -121,7 +121,11 @@ describe(Grid, () => {
 
             const adjacentCells = grid.getAdjacentCellsFromCoordinates(0, 0);
             expect(adjacentCells.length).toBe(3);
-            expect(adjacentCells).toEqual([expected, expected, expected]);
+            expect(adjacentCells).toEqual([
+                { cell: expected, x: 1, y: 0 },
+                { cell: expected, x: 0, y: 1 },
+                { cell: expected, x: 1, y: 1 },
+            ]);
         });
     });
 

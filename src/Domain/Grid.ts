@@ -1,6 +1,7 @@
 import { Cell, CellAction } from './Cell';
 
 export type Cells = Array<Cell>;
+export type CellsWithCoordinates = Array<{ cell: Cell; x: number; y: number }>;
 
 export class Grid {
     [key: number]: number;
@@ -58,9 +59,14 @@ export class Grid {
     }
 
     cellByCoodinates(x: number, y: number): Cell | undefined {
+        const index = this.getCellIndexFromCoordinates(x, y);
+        return index !== undefined ? this._cells[index] : undefined;
+    }
+
+    getCellIndexFromCoordinates(x: number, y: number): number | undefined {
         if (x < 0 || y < 0 || x >= this._column || y >= this._column)
             return undefined;
-        return this._cells[this._column * y + x];
+        return this._column * y + x;
     }
 
     getCellCoordinatesFromIndex(index: number) {
@@ -70,8 +76,11 @@ export class Grid {
         };
     }
 
-    getAdjacentCellsFromCoordinates(x: number, y: number): Cell[] {
-        return [
+    getAdjacentCellsFromCoordinates(
+        x: number,
+        y: number
+    ): CellsWithCoordinates {
+        const adjacentCellCoordinates = [
             [x - 1, y - 1],
             [x, y - 1],
             [x + 1, y - 1],
@@ -80,9 +89,10 @@ export class Grid {
             [x - 1, y + 1],
             [x, y + 1],
             [x + 1, y + 1],
-        ]
-            .map(([x, y]) => this.cellByCoodinates(x, y))
-            .filter(cell => cell instanceof Cell) as Cell[];
+        ];
+        return adjacentCellCoordinates
+            .map(([x, y]) => ({ cell: this.cellByCoodinates(x, y), x, y }))
+            .filter(({ cell }) => cell instanceof Cell) as CellsWithCoordinates;
     }
 
     getAdjacentCellsMineCount(index: number) {
@@ -90,9 +100,36 @@ export class Grid {
         const adjacentCells = this.getAdjacentCellsFromCoordinates(x, y);
 
         return adjacentCells.reduce(
-            (acc, cell) => acc + (cell.bomb ? 1 : 0),
+            (acc, { cell }) => acc + (cell.bomb ? 1 : 0),
             0
         );
+    }
+
+    hasUndugAdjacentCell(index: number): boolean {
+        const { x, y } = this.getCellCoordinatesFromIndex(index);
+        return this.getAdjacentCellsFromCoordinates(x, y).some(
+            ({ cell }) => !cell.dug
+        );
+    }
+
+    clearAllSafeCells() {
+        let cellWithNoAdjacentMines;
+        let grid: Grid = this;
+        do {
+            cellWithNoAdjacentMines = grid._cells.findIndex(
+                (cell: Cell, index: number) =>
+                    cell.dug &&
+                    grid.getAdjacentCellsMineCount(index) === 0 &&
+                    grid.hasUndugAdjacentCell(index)
+            );
+            if (cellWithNoAdjacentMines >= 0) {
+                grid = grid.sendActionToSurroundingCells(
+                    cellWithNoAdjacentMines,
+                    'dig'
+                );
+            }
+        } while (cellWithNoAdjacentMines >= 0);
+        return grid;
     }
 
     sendActionToCell(cellIndex: number, action: CellAction): Grid {
@@ -100,6 +137,21 @@ export class Grid {
         const cell = cells[cellIndex];
 
         cells[cellIndex] = cell[action]();
+        return new Grid(this._column, cells);
+    }
+
+    sendActionToSurroundingCells(cellIndex: number, action: CellAction): Grid {
+        const cells = [...this._cells];
+        const { x, y } = this.getCellCoordinatesFromIndex(cellIndex);
+        const adjacentCells = this.getAdjacentCellsFromCoordinates(x, y);
+
+        adjacentCells.forEach(({ cell, x, y }) => {
+            const cellIndex = this.getCellIndexFromCoordinates(x, y);
+            if (cellIndex !== undefined) {
+                cells[cellIndex] = cell[action]();
+            }
+        });
+
         return new Grid(this._column, cells);
     }
 

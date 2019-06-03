@@ -25,7 +25,17 @@ const useStateGridCells = (initialValue: Grid): GridCustomHook => {
         grid,
         (index: number, action: CellAction) => {
             const newGrid = grid.sendActionToCell(index, action);
-            setGrid(newGrid);
+            const updatedCell = newGrid.cellByIndex(index);
+            if (
+                updatedCell &&
+                updatedCell.dug &&
+                !updatedCell.bomb &&
+                newGrid.getAdjacentCellsMineCount(index) === 0
+            ) {
+                setGrid(newGrid.clearAllSafeCells());
+            } else {
+                setGrid(newGrid);
+            }
         },
         setGrid,
     ];
