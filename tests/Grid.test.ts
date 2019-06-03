@@ -6,8 +6,8 @@ describe(Grid, () => {
         expect(() => new Grid(2, [])).toThrowError(RangeError);
     });
 
-    describe('getByCoordinate', () => {
-        test('it get the first cell in grid when asking for x:0 y:0', () => {
+    describe('cellByCoodinates', () => {
+        test('it returns the first cell in grid when asking for x:0 y:0', () => {
             const expected = Cell.withBomb();
             const unexpected = Cell.withoutBomb();
             const grid = new Grid(5, [
@@ -21,7 +21,7 @@ describe(Grid, () => {
             expect(grid.cellByCoodinates(0, 0)).toBe(expected);
         });
 
-        test('it get the last cell in grid when asking for x:3 y:1', () => {
+        test('it returns the last cell in grid when asking for x:3 y:1', () => {
             const expected = Cell.withBomb();
             const unexpected = Cell.withoutBomb();
             const grid = new Grid(4, [
@@ -40,21 +40,53 @@ describe(Grid, () => {
         });
 
         test('it returns undefined when asked for x:-1, y:1', () => {
-            const expected = Cell.withBomb();
-            const unexpected = Cell.withoutBomb();
-            const grid = new Grid(3, [unexpected, unexpected, unexpected]);
+            const cell = Cell.withBomb();
+            const grid = new Grid(3, [cell, cell, cell]);
 
-            const cell = grid.cellByCoodinates(-1, 1);
-            expect(cell).toBe(undefined);
+            const result = grid.cellByCoodinates(-1, 1);
+            expect(result).toBe(undefined);
         });
 
         test('it returns undefined when asked a coordinate value higher or equal to the column count', () => {
-            const expected = Cell.withBomb();
-            const unexpected = Cell.withoutBomb();
-            const grid = new Grid(3, [unexpected, unexpected, unexpected]);
+            const cell = Cell.withoutBomb();
+            const grid = new Grid(3, [cell, cell, cell]);
 
-            const cell = grid.cellByCoodinates(3, 1);
-            expect(cell).toBe(undefined);
+            const result = grid.cellByCoodinates(3, 1);
+            expect(result).toBe(undefined);
+        });
+    });
+
+    describe('getCellIndexFromCoordinates', () => {
+        test('it returns 0 when asked for the x=0 y=0', () => {
+            const cell = Cell.withoutBomb();
+            const grid = new Grid(2, [cell, cell]);
+
+            const result = grid.getCellIndexFromCoordinates(0, 0);
+            expect(result).toBe(0);
+        });
+
+        test('it returns 4 when asked for the x=1 y=1 in a grid with 3 columns', () => {
+            const cell = Cell.withoutBomb();
+            const grid = new Grid(3, [cell, cell, cell]);
+
+            const result = grid.getCellIndexFromCoordinates(1, 1);
+            expect(result).toBe(4);
+        });
+
+        test('it returns undefined when asked for x:-1, y:1', () => {
+            const cell = Cell.withoutBomb();
+            const grid = new Grid(2, [cell, cell]);
+
+            const result = grid.getCellIndexFromCoordinates(-1, 1);
+            expect(result).toBe(undefined);
+        });
+
+        test('it returns undefined when asked a coordinate value higher or equal to the column count', () => {
+            const cell = Cell.withoutBomb();
+            const grid = new Grid(2, [cell, cell]);
+
+            const result = grid.getCellIndexFromCoordinates(4, 6);
+            expect(result).toBe(undefined);
         });
     });
 
@@ -161,6 +193,122 @@ describe(Grid, () => {
 
             const adjacentMineCount = grid.getAdjacentCellsMineCount(4);
             expect(adjacentMineCount).toBe(8);
+        });
+    });
+
+    describe('hasUndugAdjacentCell', () => {
+        test('it returns true if the cell is adjacent to one undug cell', () => {
+            const cell = Cell.withoutBomb();
+            const grid = new Grid(2, [
+                cell.dig(),
+                cell.dig(),
+                cell.dig(),
+                cell,
+            ]);
+
+            const result = grid.hasUndugAdjacentCell(0);
+            expect(result).toBe(true);
+        });
+
+        test('it returns false if the cell has no adjacent undug cells', () => {
+            const cell = Cell.withoutBomb();
+            const grid = new Grid(2, [
+                cell.dig(),
+                cell.dig(),
+                cell.dig(),
+                cell.dig(),
+            ]);
+
+            const result = grid.hasUndugAdjacentCell(0);
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('clearAllSafeCells', () => {
+        test('it returns the same grid if there is no dug cell adjacent ton only undug mine-free cells', () => {
+            const withBomb = Cell.withBomb();
+            const withoutBomb = Cell.withoutBomb();
+            const grid = new Grid(2, [
+                withoutBomb.dig(),
+                withBomb,
+                withBomb,
+                withBomb,
+            ]);
+
+            const result = grid.clearAllSafeCells();
+            expect(result).toBe(grid);
+        });
+
+        test('it returns an updated grid if there is a dug cell adjacent to only undug mine-free cells', () => {
+            const withBomb = Cell.withBomb();
+            const withoutBomb = Cell.withoutBomb();
+            const grid = new Grid(3, [
+                withoutBomb.dig(),
+                withoutBomb,
+                withBomb,
+                withoutBomb,
+                withoutBomb,
+                withBomb,
+                withBomb,
+                withBomb,
+                withBomb,
+            ]);
+            /* _ c b
+               c c b
+               b b b */
+
+            const result = grid.clearAllSafeCells();
+            // @ts-ignore
+            expect(result._cells).toEqual([
+                withoutBomb.dig(),
+                withoutBomb.dig(),
+                withBomb,
+                withoutBomb.dig(),
+                withoutBomb.dig(),
+                withBomb,
+                withBomb,
+                withBomb,
+                withBomb,
+            ]);
+            /* _ _ b
+               _ _ b
+               b b b */
+        });
+
+        test('it returns an updated grid if there is a dug cell adjacent to only undug mine-free cells (with recursivity)', () => {
+            const withBomb = Cell.withBomb();
+            const withoutBomb = Cell.withoutBomb();
+            const grid = new Grid(3, [
+                withoutBomb.dig(),
+                withoutBomb,
+                withoutBomb,
+                withoutBomb,
+                withoutBomb,
+                withoutBomb,
+                withBomb,
+                withBomb,
+                withBomb,
+            ]);
+            /* _ c c
+               c c c
+               b b b */
+
+            const result = grid.clearAllSafeCells();
+            // @ts-ignore
+            expect(result._cells).toEqual([
+                withoutBomb.dig(),
+                withoutBomb.dig(),
+                withoutBomb.dig(),
+                withoutBomb.dig(),
+                withoutBomb.dig(),
+                withoutBomb.dig(),
+                withBomb,
+                withBomb,
+                withBomb,
+            ]);
+            /* _ _ _
+               _ _ _
+               b b b */
         });
     });
 
