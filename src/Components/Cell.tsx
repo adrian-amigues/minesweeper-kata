@@ -31,6 +31,7 @@ const cellStyle = (status: CellStatus): React.CSSProperties => ({
 export const Cell: React.FunctionComponent<CellProps> = props => {
     return (
         <div
+            data-status={props.status}
             className="cell"
             onClick={ev => {
                 ev.preventDefault();
