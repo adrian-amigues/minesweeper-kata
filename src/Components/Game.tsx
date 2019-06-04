@@ -6,6 +6,7 @@ type GameProps = {
 };
 
 const gameTextStyle = (gameOver: GameOver): React.CSSProperties => ({
+    height: '120px',
     fontSize: '4.5rem',
     fontFamily: 'cursive',
     textAlign: 'center',
